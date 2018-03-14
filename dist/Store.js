@@ -181,7 +181,8 @@ var Store = /** @class */ (function (_super) {
         var record = this.find(type, id);
         var flattened = utils_1.flattenRecord(obj);
         if (record) {
-            record.update(flattened);
+            var data = record.static.preprocess(flattened);
+            record.update(data);
         }
         else if (this.static.types.filter(function (item) { return item.type === obj.type; }).length) {
             record = this.add(flattened, obj.type);

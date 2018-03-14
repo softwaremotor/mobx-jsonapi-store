@@ -213,7 +213,8 @@ export class Store extends NetworkStore {
     const flattened: IDictionary<any> = flattenRecord(obj);
 
     if (record) {
-      record.update(flattened);
+      const data = record.static.preprocess(flattened);
+      record.update(data);
     } else if (this.static.types.filter((item) => item.type === obj.type).length) {
       record = this.add(flattened, obj.type) as Record;
     } else {
