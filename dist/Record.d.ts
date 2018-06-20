@@ -1,5 +1,6 @@
 import { IModel, Model } from 'mobx-collection-store';
 import IDictionary from './interfaces/IDictionary';
+import IJsonApiOptions from './interfaces/IJsonApiOptions';
 import IRequestOptions from './interfaces/IRequestOptions';
 import * as JsonApi from './interfaces/JsonApi';
 import { Response } from './Response';
@@ -131,7 +132,7 @@ export declare class Record extends Model implements IModel {
      *
      * @memberOf Record
      */
-    toJsonApi(): JsonApi.IRecord;
+    toJsonApi(options?: IJsonApiOptions): JsonApi.IRecord;
     /**
      * Saves (creates or updates) the record to the server
      *

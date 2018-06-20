@@ -37,7 +37,7 @@ describe('Network basics', () => {
     expect(events.data[0]['imageId']).to.equal('1');
     expect(events.data[0]['imageMeta']['foo']).to.equal('bar');
 
-    const data = events.data[0].toJsonApi();
+    const data = events.data[0].toJsonApi({ include: 'image' });
     expect(data.id).to.equal(1);
     expect(data.type).to.equal('event');
     expect(data.attributes.title).to.equal('Test 1');

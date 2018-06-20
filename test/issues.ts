@@ -166,14 +166,15 @@ describe('Reported issues', () => {
       const store = new ApiStore();
       const unit = new UnitRecord();
 
-      expect(unit.toJsonApi().relationships.organization.data).to.equal(null);
+      expect(unit.toJsonApi().relationships).to.equal(undefined);
 
       store.add(unit);
 
-      expect(unit.toJsonApi().relationships.organization.data).to.equal(null);
+      expect(unit.toJsonApi().relationships).to.equal(undefined);
 
       unit.organization = new OrganizationRecord({name: 'Foo'});
-      expect(unit.toJsonApi().relationships.organization.data['id']).to.equal(unit.organizationId);
-      expect(unit.toJsonApi().relationships.organization.data['type']).to.equal('organizations');
+      expect(unit.toJsonApi().relationships).to.equal(undefined);
+      expect(unit.toJsonApi({ include: 'organization' }).relationships.organization.data['id']).to.equal(unit.organizationId);
+      expect(unit.toJsonApi({ include: 'organization' }).relationships.organization.data['type']).to.equal('organizations');
   });
 });
