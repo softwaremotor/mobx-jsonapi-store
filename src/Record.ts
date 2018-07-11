@@ -298,8 +298,11 @@ export class Record extends Model implements IModel {
     const href: string = typeof link === 'object' ? link.href : link;
 
     const type: string = this['__refs'][relationship];
-    type ID = JsonApi.IIdentifier|Array<JsonApi.IIdentifier>;
-    const data: ID = mapItems(this[`${relationship}Id`], (id) => ({id, type})) as ID;
+    type ID = JsonApi.IIdentifier|Array<JsonApi.IIdentifier>|null;
+    const relId = this[`${relationship}Id`];
+    const data: ID = relId === undefined || relId === null ?
+      null :
+      mapItems(relId, (id) => ({id, type})) as ID;
 
     return update(store, href, {data}, options && options.headers)
       .then(handleResponse(this, relationship));

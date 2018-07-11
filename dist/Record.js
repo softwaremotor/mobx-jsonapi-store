@@ -223,7 +223,10 @@ var Record = /** @class */ (function (_super) {
         /* istanbul ignore next */
         var href = typeof link === 'object' ? link.href : link;
         var type = this['__refs'][relationship];
-        var data = utils_1.mapItems(this[relationship + "Id"], function (id) { return ({ id: id, type: type }); });
+        var relId = this[relationship + "Id"];
+        var data = relId === undefined || relId === null ?
+            null :
+            utils_1.mapItems(relId, function (id) { return ({ id: id, type: type }); });
         return NetworkUtils_1.update(store, href, { data: data }, options && options.headers)
             .then(NetworkUtils_1.handleResponse(this, relationship));
     };
