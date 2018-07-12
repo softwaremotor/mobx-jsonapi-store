@@ -314,7 +314,7 @@ function buildUrl(type, id, model, options) {
 exports.buildUrl = buildUrl;
 function buildRelationshipUrl(type, id, relationship, model, options) {
     var rootUrl = __rootModelUrl(type, id, model);
-    var url = rootUrl + "/" + exports.config.transformPathSegment(relationship);
+    var url = rootUrl + "/relationships/" + exports.config.transformPathSegment(relationship);
     var params = __flattenOptions(options);
     return __appendParams(url, params);
 }

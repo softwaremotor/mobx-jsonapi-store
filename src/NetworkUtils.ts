@@ -429,7 +429,7 @@ export function buildRelationshipUrl(
   options?: IRequestOptions,
 ) {
   const rootUrl = __rootModelUrl(type, id, model);
-  const url = `${rootUrl}/${config.transformPathSegment(relationship)}`;
+  const url = `${rootUrl}/relationships/${config.transformPathSegment(relationship)}`;
   const params = __flattenOptions(options);
   return __appendParams(url, params);
 }
