@@ -97,6 +97,9 @@ exports.config = {
     transformResponse: function (response) {
         return response;
     },
+    transformPathSegment: function (segment) {
+        return segment;
+    },
 };
 function fetch(options) {
     return exports.config.storeFetch(options);
@@ -291,12 +294,28 @@ function __parametrize(params, scope) {
     });
     return list;
 }
-function buildUrl(type, id, model, options) {
-    var path = model
+function __rootModelUrl(type, id, model) {
+    var endpoint = model
         ? (utils_1.getValue(model['endpoint']) || model['baseUrl'] || model.type)
         : type;
+    var path = exports.config.transformPathSegment(endpoint);
     var url = id ? path + "/" + id : "" + path;
-    var params = __prepareFilters((options && options.filter) || {}).concat(__prepareSort(options && options.sort), __prepareIncludes(options && options.include), __prepareFields((options && options.fields) || {}), __prepareRawParams((options && options.params) || []));
-    return __appendParams(prefixUrl(url), params);
+    return prefixUrl(url);
+}
+function __flattenOptions(options) {
+    if (options === void 0) { options = {}; }
+    return __prepareFilters(options.filter || {}).concat(__prepareSort(options.sort), __prepareIncludes(options.include), __prepareFields(options.fields || {}), __prepareRawParams(options.params || []));
+}
+function buildUrl(type, id, model, options) {
+    var url = __rootModelUrl(type, id, model);
+    var params = __flattenOptions(options);
+    return __appendParams(url, params);
 }
 exports.buildUrl = buildUrl;
+function buildRelationshipUrl(type, id, relationship, model, options) {
+    var rootUrl = __rootModelUrl(type, id, model);
+    var url = rootUrl + "/" + exports.config.transformPathSegment(relationship);
+    var params = __flattenOptions(options);
+    return __appendParams(url, params);
+}
+exports.buildRelationshipUrl = buildRelationshipUrl;

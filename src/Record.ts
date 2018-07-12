@@ -5,7 +5,15 @@ import IJsonApiOptions from './interfaces/IJsonApiOptions';
 import IRequestOptions from './interfaces/IRequestOptions';
 import * as JsonApi from './interfaces/JsonApi';
 
-import {buildUrl, create, fetchLink, handleResponse, remove, update} from './NetworkUtils';
+import {
+  buildRelationshipUrl,
+  buildUrl,
+  create,
+  fetchLink,
+  handleResponse,
+  remove,
+  update,
+} from './NetworkUtils';
 import {Response} from './Response';
 import {Store} from './Store';
 import {getValue, mapItems, objectForEach} from './utils';
@@ -281,21 +289,8 @@ export class Record extends Model implements IModel {
   }
 
   public saveRelationship(relationship: string, options?: IRequestOptions): Promise<Record> {
-    const link: JsonApi.ILink = (
-      'relationships' in this.__internal &&
-      relationship in this.__internal.relationships &&
-      'self' in this.__internal.relationships[relationship]
-    ) ? this.__internal.relationships[relationship]['self'] : null;
-
-    /* istanbul ignore if */
-    if (!link) {
-      throw new Error('The relationship doesn\'t have a defined link');
-    }
-
+    const href = this.__getRelationshipUrl(relationship, options);
     const store: Store = this.__collection as Store;
-
-    /* istanbul ignore next */
-    const href: string = typeof link === 'object' ? link.href : link;
 
     const type: string = this['__refs'][relationship];
     type ID = JsonApi.IIdentifier|Array<JsonApi.IIdentifier>|null;
@@ -374,5 +369,25 @@ export class Record extends Model implements IModel {
     const type = getValue<string>(this.static.endpoint) || this.getRecordType() || this.static.type;
 
     return buildUrl(type, this.__persisted ? this.getRecordId() : null, null, options);
+  }
+
+  private __getRelationshipUrl(relationship: string, options?: IRequestOptions): string {
+    const link: JsonApi.ILink = (
+      'relationships' in this.__internal &&
+      relationship in this.__internal.relationships &&
+      'self' in this.__internal.relationships[relationship]
+    ) ? this.__internal.relationships[relationship]['self'] : null;
+
+    if (link) {
+      return typeof link === 'object' ? link.href : link;
+    } else {
+      return buildRelationshipUrl(
+        this.getRecordType(),
+        this.getRecordId(),
+        relationship,
+        null,
+        options,
+      );
+    }
   }
 }

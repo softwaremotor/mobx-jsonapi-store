@@ -41,6 +41,7 @@ export interface IConfigType {
   storeFetch: StoreFetchType;
   transformRequest: (options: IStoreFetchOpts) => IStoreFetchOpts;
   transformResponse: (response: IRawResponse) => IRawResponse;
+  transformPathSegment: (segment: string) => string;
 }
 
 export const config: IConfigType = {
@@ -151,6 +152,10 @@ export const config: IConfigType = {
 
   transformResponse(response: IRawResponse): IRawResponse {
     return response;
+  },
+
+  transformPathSegment(segment: string): string {
+    return segment;
   },
 };
 
@@ -380,25 +385,51 @@ function __parametrize(params: object, scope: string = ''): Array<{key: string, 
   return list;
 }
 
+function __rootModelUrl(
+  type: number|string,
+  id?: number|string,
+  model?: IModelConstructor,
+) {
+  const endpoint: string = model
+    ? (getValue<string>(model['endpoint']) || model['baseUrl'] || model.type)
+    : type;
+
+  const path = config.transformPathSegment(endpoint);
+  const url: string = id ? `${path}/${id}` : `${path}`;
+
+  return prefixUrl(url);
+}
+
+function __flattenOptions(options: IRequestOptions | undefined = {}): Array<string> {
+  return [
+    ...__prepareFilters(options.filter || {}),
+    ...__prepareSort(options.sort),
+    ...__prepareIncludes(options.include),
+    ...__prepareFields(options.fields || {}),
+    ...__prepareRawParams(options.params || []),
+  ];
+}
+
 export function buildUrl(
   type: number|string,
   id?: number|string,
   model?: IModelConstructor,
   options?: IRequestOptions,
 ) {
-  const path: string = model
-    ? (getValue<string>(model['endpoint']) || model['baseUrl'] || model.type)
-    : type;
+  const url = __rootModelUrl(type, id, model);
+  const params = __flattenOptions(options);
+  return __appendParams(url, params);
+}
 
-  const url: string = id ? `${path}/${id}` : `${path}`;
-
-  const params: Array<string> = [
-    ...__prepareFilters((options && options.filter) || {}),
-    ...__prepareSort(options && options.sort),
-    ...__prepareIncludes(options && options.include),
-    ...__prepareFields((options && options.fields) || {}),
-    ...__prepareRawParams((options && options.params) || []),
-  ];
-
-  return __appendParams(prefixUrl(url), params);
+export function buildRelationshipUrl(
+  type: number|string,
+  id: number|string,
+  relationship: string,
+  model?: IModelConstructor,
+  options?: IRequestOptions,
+) {
+  const rootUrl = __rootModelUrl(type, id, model);
+  const url = `${rootUrl}/${config.transformPathSegment(relationship)}`;
+  const params = __flattenOptions(options);
+  return __appendParams(url, params);
 }

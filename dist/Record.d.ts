@@ -171,4 +171,5 @@ export declare class Record extends Model implements IModel {
      * @memberOf Record
      */
     private __getUrl(options?, ignoreSelf?);
+    private __getRelationshipUrl(relationship, options?);
 }

@@ -212,16 +212,8 @@ var Record = /** @class */ (function (_super) {
             .then(NetworkUtils_1.handleResponse(this));
     };
     Record.prototype.saveRelationship = function (relationship, options) {
-        var link = ('relationships' in this.__internal &&
-            relationship in this.__internal.relationships &&
-            'self' in this.__internal.relationships[relationship]) ? this.__internal.relationships[relationship]['self'] : null;
-        /* istanbul ignore if */
-        if (!link) {
-            throw new Error('The relationship doesn\'t have a defined link');
-        }
+        var href = this.__getRelationshipUrl(relationship, options);
         var store = this.__collection;
-        /* istanbul ignore next */
-        var href = typeof link === 'object' ? link.href : link;
         var type = this['__refs'][relationship];
         var relId = this[relationship + "Id"];
         var data = relId === undefined || relId === null ?
@@ -288,6 +280,17 @@ var Record = /** @class */ (function (_super) {
         /* istanbul ignore next */
         var type = utils_1.getValue(this.static.endpoint) || this.getRecordType() || this.static.type;
         return NetworkUtils_1.buildUrl(type, this.__persisted ? this.getRecordId() : null, null, options);
+    };
+    Record.prototype.__getRelationshipUrl = function (relationship, options) {
+        var link = ('relationships' in this.__internal &&
+            relationship in this.__internal.relationships &&
+            'self' in this.__internal.relationships[relationship]) ? this.__internal.relationships[relationship]['self'] : null;
+        if (link) {
+            return typeof link === 'object' ? link.href : link;
+        }
+        else {
+            return NetworkUtils_1.buildRelationshipUrl(this.getRecordType(), this.getRecordId(), relationship, null, options);
+        }
     };
     /**
      * Type property of the record class

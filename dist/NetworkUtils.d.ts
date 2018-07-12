@@ -27,6 +27,7 @@ export interface IConfigType {
     storeFetch: StoreFetchType;
     transformRequest: (options: IStoreFetchOpts) => IStoreFetchOpts;
     transformResponse: (response: IRawResponse) => IRawResponse;
+    transformPathSegment: (segment: string) => string;
 }
 export declare const config: IConfigType;
 export declare function fetch(options: IStoreFetchOpts): Promise<LibResponse>;
@@ -90,3 +91,4 @@ export declare function fetchLink(link: JsonApi.ILink, store: Store, requestHead
 export declare function handleResponse(record: Record, prop?: string): (response: LibResponse) => Record;
 export declare function prefixUrl(url: any): string;
 export declare function buildUrl(type: number | string, id?: number | string, model?: IModelConstructor, options?: IRequestOptions): string;
+export declare function buildRelationshipUrl(type: number | string, id: number | string, relationship: string, model?: IModelConstructor, options?: IRequestOptions): string;
