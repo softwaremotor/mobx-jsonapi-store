@@ -1,3 +1,4 @@
+import { runInAction } from 'mobx';
 import {IModel, Model} from 'mobx-collection-store';
 
 import IDictionary from './interfaces/IDictionary';
@@ -326,7 +327,7 @@ export class Record extends Model implements IModel {
           throw response.error;
         }
 
-        this.__persisted = false;
+        runInAction(() => this.__persisted = false);
 
         if (this.__collection) {
           this.__collection.remove(this.getRecordType(), this.getRecordId());

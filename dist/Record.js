@@ -10,6 +10,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+var mobx_1 = require("mobx");
 var mobx_collection_store_1 = require("mobx-collection-store");
 var NetworkUtils_1 = require("./NetworkUtils");
 var utils_1 = require("./utils");
@@ -245,7 +246,7 @@ var Record = /** @class */ (function (_super) {
             if (response.error) {
                 throw response.error;
             }
-            _this.__persisted = false;
+            mobx_1.runInAction(function () { return _this.__persisted = false; });
             if (_this.__collection) {
                 _this.__collection.remove(_this.getRecordType(), _this.getRecordId());
             }
